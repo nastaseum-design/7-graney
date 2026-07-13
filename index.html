@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #F7F0E4; }
+    * { box-sizing: border-box; }
+    a { color: #B9873F; text-decoration: none; }
+    a:hover { color: #96692B; }
+
+    /* --- лёгкие аккуратные акценты --- */
+    /* пункты меню: тонкая золотая линия, растущая из центра */
+    nav a { position: relative; transition: color .25s ease; }
+    nav a::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: -6px;
+      height: 1.5px; background: #B9873F; transform: scaleX(0);
+      transform-origin: center; transition: transform .3s ease;
+    }
+    nav a:hover::after { transform: scaleX(1); }
+
+    /* кнопки-CTA (золотой фон): мягкий подъём и тень при наведении */
+    a[href="#price"], a.cta {
+      transition: transform .25s ease, box-shadow .25s ease, background-color .25s ease;
+    }
+    a[href="#price"]:hover, a.cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(150, 105, 43, .28);
+      background-color: #A9782F !important; color: #FFFFFF !important;
+    }
+    a[href="#price"] span, a.cta span { transition: transform .25s ease; }
+    a[href="#price"]:hover span, a.cta:hover span { transform: translateX(4px); }
+
+    /* основная CTA в тарифах: блик, чтобы не казалась тусклой */
+    a.cta-primary { position: relative; overflow: hidden; box-shadow: 0 6px 18px rgba(150, 105, 43, .22); }
+    a.cta-primary::before {
+      content: ""; position: absolute; top: 0; left: -140%; width: 60%; height: 100%;
+      background: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.45) 50%, rgba(255,255,255,0) 100%);
+      transform: skewX(-18deg);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      a.cta-primary::before { animation: shine 4.5s ease-in-out infinite; }
+    }
+    @keyframes shine { 0%, 62% { left: -140%; } 78%, 100% { left: 150%; } }
+
+    /* карточки: плавный подъём, золотистая рамка и мягкая тень */
+    div[style*="border: 1px solid #E4D6BB"][style*="border-radius: 6px"] {
+      transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    }
+    div[style*="border: 1px solid #E4D6BB"][style*="border-radius: 6px"]:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 34px rgba(60, 45, 20, .10);
+      border-color: #D6BE8E;
+    }
+
+    /* --- микро-анимации --- */
+    @media (prefers-reduced-motion: no-preference) {
+      /* появление секций при скролле — чистый CSS scroll-timeline */
+      section, footer {
+        animation: revealUp both;
+        animation-timeline: view();
+        animation-range: entry 4% cover 26%;
+      }
+      /* «дыхание» декоративной цифры 7 */
+      .breathe { animation: breathe 7s ease-in-out infinite; transform-origin: center; }
+      /* медленный зум фонового фото */
+      .kenburns { animation: kenburns 18s ease-in-out infinite alternate; }
+    }
+    @keyframes revealUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+    @keyframes breathe { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.03); opacity: .92; } }
+    @keyframes kenburns { from { transform: scale(1); } to { transform: scale(1.06); } }
+  </style>
+</helmet>
+
+<div style="font-family: 'Inter', sans-serif; color: #23201B; background: #F7F0E4; width: 100%; overflow-x: hidden; position: absolute; left: -1px; top: -39px">
+
+  <!-- HEADER -->
+  <header style="position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 64px; background: #F7F0E4; border-bottom: 1px solid #E4D6BB; flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <img src="uploads/logo108-dark.png" alt="Клуб 108" style="height: 48px; width: auto; display: block;">
+    </div>
+    <nav style="display: flex; align-items: center; gap: 40px; font-size: 16px;">
+      <a href="#about" style="color: #23201B;">О курсе</a>
+      <a href="#program" style="color: #23201B;">Программа</a>
+      <a href="#format" style="color: #23201B;">Формат</a>
+      <a href="#price" style="color: #23201B;">Стоимость</a>
+    </nav>
+    <a href="#price" class="cta-primary" style="display: flex; align-items: center; gap: 10px; padding: 14px 26px; background: #B9873F; border-radius: 3px; color: #FBF6EC; font-size: 15px; font-weight: 600;">Записаться <span>→</span></a>
+  </header>
+
+  <!-- 01 HERO -->
+  <section style="position: relative; display: flex; align-items: stretch; flex-wrap: nowrap; min-height: 780px; background: #F7F0E4; overflow: hidden;">
+    <div style="flex: 1 1 50%; min-width: 0; padding: 90px 48px 70px; position: relative; z-index: 2;">
+      <span class="breathe" style="position: absolute; top: 110px; left: 40px; font-family: 'PT Serif', serif; font-size: 380px; line-height: 1; color: #ECE1CB; z-index: -1; user-select: none;">7</span>
+      <h1 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 96px; line-height: 1.05; margin: 0 0 28px; color: #23201B; position: relative;">7 граней<br>совершенства</h1>
+      <div style="width: 56px; height: 2px; background: #B9873F; margin-bottom: 28px;"></div>
+      <p style="font-size: 22px; line-height: 1.6; color: #4A443C; max-width: 520px; margin: 0 0 36px;">8 недель, чтобы превратить знания Стивена Кови в навыки, которые действительно меняют жизнь.</p>
+      <div style="display: flex; gap: 40px; margin-bottom: 40px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="width: 40px; height: 40px; border-radius: 8px; background: #EFE0C4; display: flex; align-items: center; justify-content: center; color: #B9873F;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+          </span>
+          <div style="font-size: 15px; line-height: 1.35;"><div>Старт</div><div style="color: #6B6155;">4 августа</div></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="width: 40px; height: 40px; border-radius: 8px; background: #EFE0C4; display: flex; align-items: center; justify-content: center; color: #B9873F;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>
+          </span>
+          <div style="font-size: 15px;">8 недель</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="width: 40px; height: 40px; border-radius: 8px; background: #EFE0C4; display: flex; align-items: center; justify-content: center; color: #B9873F;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"></path></svg>
+          </span>
+          <div style="font-size: 15px;">Онлайн</div>
+        </div>
+      </div>
+      <a href="#price" class="cta-primary" style="display: inline-flex; align-items: center; gap: 14px; padding: 22px 96px; background: #B9873F; color: #FFFFFF; font-family: 'PT Serif', serif; font-size: 19px; border-radius: 6px;">Начать путь <span>→</span></a>
+    </div>
+    <div class="kenburns" style="flex: 1 1 50%; min-width: 0; position: relative; min-height: 500px; background-image: url('uploads/1.png'); background-size: auto 111%; background-position: 92% 38%;">
+      <div style="position: absolute; inset: 0; background: linear-gradient(90deg, #F7F0E4 0%, rgba(247,240,228,0) 18%)"></div>
+    </div>
+  </section>
+
+  <!-- HERO QUOTE STRIP -->
+  
+
+  <!-- 02 PROBLEM -->
+  <div style="border-top: 1px solid #E4D6BB; padding: 34px 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; position: relative; width: 1305px; height: 127px; background-color: #EFE6D4">
+    <div style="display: flex; gap: 20px; align-items: flex-start;">
+      
+      <img src="uploads/screen4_icons/transparent_gold/quote_icon_gold.png" alt="" style="width: 60px; height: 60px; object-fit: contain; flex-shrink: 0;"><p style="font-family: 'PT Serif', serif; font-style: italic; font-size: 19px; line-height: 1.5; margin: 0; color: #3A352E;">Между стимулом и реакцией есть пространство.<br>В этом пространстве — наша свобода и сила.</p>
+    </div><div style="font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #B9873F; white-space: nowrap; line-height: 2">— СТИВЕН КОВИ</div>
+    
+  </div><section id="about" style="padding: 90px 64px 0; width: 1310px; height: 1226px; background-image: url('uploads/2.png'); background-size: cover; background-position: left top; background-repeat: no-repeat">
+    <div style="font-size: 15px; font-weight: 700; color: #B9873F; letter-spacing: 0.08em; margin-bottom: 10px;">02</div>
+    <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 18px;"></div>
+    <h2 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 46px; line-height: 1.2; margin: 0 0 6px; color: #23201B;">Вы читали «7 навыков»?</h2>
+    <h2 style="font-family: 'PT Serif', serif; font-style: italic; font-weight: 400; font-size: 46px; line-height: 1.2; margin: 0 0 28px; color: #B9873F;">Но что изменилось?</h2>
+    <p style="font-size: 18px; line-height: 1.6; color: #4A443C; max-width: 640px; margin: 0 0 48px;">Миллионы людей прочитали книгу Стивена Кови.<br>Единицы — внедрили её в жизнь.<br>Потому что между знанием и навыком — пропасть.<br>Мы создали этот курс, чтобы её преодолеть.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px;">
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/01_fire_gold.png" alt="" style="width: 88px; height: 61px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">1. Тушу пожары 24/7</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Весь день — срочные задачи. Вечером понимаю: к важному так и не приблизился.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/02_compass_gold.png" alt="" style="width: 58px; height: 53px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">2. Живу «на автопилоте»</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Плыву по течению и реагирую на обстоятельства вместо того, чтобы их создавать.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/03_scales_gold.png" alt="" style="width: 60px; height: 60px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">3. Бесконечные компромиссы</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Либо подавляю других, либо постоянно уступаю — забывая о себе.</p>
+      </div>
+
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/04_chat_gold.png" alt="" style="width: 64px; height: 64px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">4. Устал доказывать</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Трачу силы на конфликты и обиды вместо того, чтобы двигаться вперёд.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/05_person_gold.png" alt="" style="width: 57px; height: 57px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">5. Боюсь делегировать</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Тащу всё на себе: «хочешь сделать хорошо — сделай сам».</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/06_battery_gold.png" alt="" style="width: 56px; height: 56px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">6. Пила затупилась</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Работаю на износ. Здоровье, обучение, покой — всё отложено «на потом».</p>
+      </div>
+
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/07_shield_gold.png" alt="" style="width: 55px; height: 55px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">7. Нет твёрдой опоры</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Нужна не очередная «фишка», а глубокая система ценностей для правильных решений.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/08_ear_gold.png" alt="" style="width: 56px; height: 56px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">8. Не слышу близких</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Говорю — и чувствую, что меня не понимают. Слушаю — и жду своей очереди говорить.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 32px;">
+        <span style="width: 52px; height: 52px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <img src="uploads/transparent_gold/09_target_gold.png" alt="" style="width: 55px; height: 55px; object-fit: contain">
+        </span>
+        <h3 style="font-size: 19px; font-weight: 600; margin: 0 0 10px;">9. Цели есть, движения нет</h3>
+        <p style="font-size: 15px; line-height: 1.55; color: #6B6155; margin: 0;">Список намерений на год написан. Но каждый вечер — то же ощущение: день прошёл, а к мечте не стал ближе ни на шаг.</p>
+      </div>
+    </div>
+  </section>
+
+  <div style="padding: 0 64px; margin-bottom: 90px;">
+    <a href="#price" class="cta-primary" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; background: #B9873F; border-radius: 6px; padding: 26px 36px; flex-wrap: wrap; text-decoration: none;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #FFFFFF; font-size: 20px;">✦</span>
+        <span style="font-family: 'PT Serif', serif; font-style: italic; font-size: 21px; color: #FFFFFF;">Это про меня — хочу перемен</span>
+      </div>
+      <span style="color: #FFFFFF; font-size: 20px;">→</span>
+    </a>
+  </div>
+
+  <!-- 03 WHO FOR -->
+  <section style="padding: 0 64px 90px; width: 1311px; height: 1054px">
+    <div style="font-size: 15px; font-weight: 700; color: #B9873F; letter-spacing: 0.08em; margin-bottom: 10px;">03</div>
+    <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 18px;"></div>
+    <div style="display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; margin-bottom: 40px;">
+      <div>
+        <h2 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 46px; line-height: 1.2; margin: 0;">Этот курс для вас,</h2>
+        <h2 style="font-family: 'PT Serif', serif; font-style: italic; font-weight: 400; font-size: 46px; line-height: 1.2; margin: 0; color: #B9873F;">если вы...</h2>
+      </div>
+      <p style="font-size: 17px; line-height: 1.6; color: #4A443C; max-width: 460px; margin: 10px 0 0;">Независимо от возраста и профессии, вас объединяет одно — стремление к лучшей, осознанной, наполненной жизни. Этот курс поможет вам сделать следующий шаг.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px;">
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; overflow: hidden;">
+        <div style="height: 190px; background-image: url('uploads/screen3_extracted_images/01_molodye_aktivnye.jpg'); background-size: cover; background-position: center;"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 24px;">
+          <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <span style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 18px;">01</span>
+            <p style="font-size: 15px; line-height: 1.5; margin: 0;">Молоды, активны и ищете проверенные способы развить характер и навыки</p>
+          </div>
+          <span style="color: #B9873F;">→</span>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; overflow: hidden;">
+        <div style="height: 190px; background-image: url('uploads/screen3_extracted_images/02_dom_deti_rutina.jpg'); background-size: cover; background-position: center;"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 24px;">
+          <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <span style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 18px;">02</span>
+            <p style="font-size: 15px; line-height: 1.5; margin: 0;">Занимаетесь домом и детьми — и устали от засасывающей рутины</p>
+          </div>
+          <span style="color: #B9873F;">→</span>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; overflow: hidden;">
+        <div style="height: 190px; background-image: url('uploads/screen3_extracted_images/03_rukovoditel_vygoranie.jpg'); background-size: cover; background-position: center;"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 24px;">
+          <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <span style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 18px;">03</span>
+            <p style="font-size: 15px; line-height: 1.5; margin: 0;">Руководитель, который чувствует выгорание и потребность в перезагрузке</p>
+          </div>
+          <span style="color: #B9873F;">→</span>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; overflow: hidden;">
+        <div style="height: 190px; background-image: url('uploads/screen3_extracted_images/04_krizis_smysla.jpg'); background-size: cover; background-position: center;"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 24px;">
+          <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <span style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 18px;">04</span>
+            <p style="font-size: 15px; line-height: 1.5; margin: 0;">Переживаете кризис смысла, чувствуете потерянность или усталость</p>
+          </div>
+          <span style="color: #B9873F;">→</span>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; overflow: hidden;">
+        <div style="height: 190px; background-image: url('uploads/screen3_extracted_images/05_dalneyshiy_put.jpg'); background-size: cover; background-position: center;"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 24px;">
+          <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <span style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 18px;">05</span>
+            <p style="font-size: 15px; line-height: 1.5; margin: 0;">Многое прошли в жизни — но дальнейший путь не зажигает</p>
+          </div>
+          <span style="color: #B9873F;">→</span>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; overflow: hidden;">
+        <div style="height: 190px; background-image: url('uploads/screen3_extracted_images/06_potryasenie_poterya.jpg'); background-size: cover; background-position: center;"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 24px;">
+          <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <span style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 18px;">06</span>
+            <p style="font-size: 15px; line-height: 1.5; margin: 0;">Пережили потрясение или потерю и ищете силы жить дальше</p>
+          </div>
+          <span style="color: #B9873F;">→</span>
+        </div>
+      </div>
+    </div>
+
+    <a href="#price" class="cta-primary" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; background: #B9873F; border-radius: 6px; padding: 26px 36px; flex-wrap: wrap; text-decoration: none;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #FFFFFF; font-size: 20px;">✦</span>
+        <span style="font-family: 'PT Serif', serif; font-style: italic; font-size: 21px; color: #FFFFFF;">Да, я узнаю себя</span>
+      </div>
+      <span style="color: #FFFFFF; font-size: 20px;">→</span>
+    </a>
+  </section>
+
+  <!-- 04 WHAT IS IT -->
+  <section style="position: relative; padding: 90px 64px; background-image: url('uploads/ChatGPT Image 8 июл. 2026 г., 13_20_38.png'); background-size: cover; background-position: center; overflow: hidden;">
+    <div style="max-width: 620px; position: relative; z-index: 2;">
+      <div style="font-size: 15px; font-weight: 700; color: #B9873F; letter-spacing: 0.08em; margin-bottom: 10px;">04</div>
+      <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 18px;"></div><h2 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 44px; line-height: 1.2; margin: 0;">Что такое</h2>
+      <h2 style="font-family: 'PT Serif', serif; font-style: italic; font-weight: 400; font-size: 44px; line-height: 1.2; margin: 0 0 22px; color: #B9873F;">«7 граней совершенства»?</h2>
+      <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 24px;"></div>
+      <p style="font-size: 17px; line-height: 1.6; color: #4A443C; margin: 0 0 20px;">Это навыковый курс — от теории к практике. За 8 недель вы пройдёте путь от личной зависимости до взаимозависимости и лидерства, последовательно раскрывая каждую грань своего потенциала.</p>
+      <p style="font-size: 17px; line-height: 1.6; color: #4A443C; margin: 0 0 36px;">Курс построен на системе Стивена Кови — одной из самых проверенных систем личной эффективности в мире. Но здесь вы не просто читаете или слушаете. <span style="color: #B9873F;">Вы практикуете.</span></p>
+      
+    </div><div style="background: #EFE6D4; border-radius: 6px; padding: 30px 34px; width: 470px; height: 168px">
+        <div style="display: flex; gap: 16px; width: 347px; height: 108px">
+          <img src="uploads/screen4_icons/transparent_gold/quote_icon_gold.png" alt="" style="width: 34px; height: 34px; object-fit: contain; flex-shrink: 0;">
+          <div>
+            <p style="font-family: 'PT Serif', serif; font-style: italic; font-size: 18px; line-height: 1.55; margin: 0 0 14px; color: #3A352E;">Мы не то, что думаем о себе.<br>Мы не то, что говорят о нас другие.<br>Мы то, что делаем каждый день.</p>
+            <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #B9873F;">— СТИВЕН КОВИ</div>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <!-- 04 FEATURES -->
+  <section style="padding: 0 64px 90px; width: 1175px; height: 251px">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 40px;">
+      <div style="display: flex; gap: 18px; align-items: flex-start;">
+        <span style="width: 46px; height: 46px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <img src="uploads/screen4_icons/transparent_gold/book_icon_gold.png" alt="" style="width: 33px; height: 33px; object-fit: contain">
+        </span>
+        <div><h4 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Практика вместо теории</h4><p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Каждый навык закрепляется в действиях</p></div>
+      </div>
+      <div style="display: flex; gap: 18px; align-items: flex-start;">
+        <span style="width: 46px; height: 46px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <img src="uploads/screen4_icons/transparent_gold/community_icon_gold.png" alt="" style="width: 30px; height: 30px; object-fit: contain">
+        </span>
+        <div><h4 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Поддержка и сообщество</h4><p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Вы не одни на этом пути. Мы идём вместе</p></div>
+      </div>
+      <div style="display: flex; gap: 18px; align-items: flex-start;">
+        <span style="width: 46px; height: 46px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <img src="uploads/screen4_icons/transparent_gold/structure_icon_gold.png" alt="" style="width: 28px; height: 28px; object-fit: contain">
+        </span>
+        <div><h4 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Структура и система</h4><p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Пошаговый путь к устойчивым результатам</p></div>
+      </div>
+      <div style="display: flex; gap: 18px; align-items: flex-start;">
+        <span style="width: 46px; height: 46px; border-radius: 50%; background: #EFE0C4; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <img src="uploads/screen4_icons/transparent_gold/focus_icon_gold.png" alt="" style="width: 31px; height: 31px; object-fit: contain">
+        </span>
+        <div><h4 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Фокус на главном</h4><p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">На том, что действительно важно для вашей жизни и будущего</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 PROGRAM -->
+  <section id="program" style="position: relative; padding: 90px 64px; min-height: 460px; background-image: url('uploads/ChatGPT Image 9 июл. 2026 г., 07_44_52.png'); background-size: cover; background-position: center calc(50% + 76px); background-repeat: no-repeat;">
+    <div style="max-width: 560px;">
+      <div style="font-size: 15px; font-weight: 700; color: #B9873F; letter-spacing: 0.08em; margin-bottom: 10px;">05</div>
+      <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 18px;"></div>
+      <h2 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 42px; line-height: 1.2; margin: 0;">Программа курса</h2>
+      <h2 style="font-family: 'PT Serif', serif; font-style: italic; font-weight: 400; font-size: 42px; line-height: 1.2; margin: 0 0 22px; color: #B9873F;">8 недель трансформации</h2>
+      <p style="font-size: 17px; line-height: 1.6; color: #4A443C; margin: 0 0 26px;">Каждая неделя — это одна грань вашей внутренней системы.<br>Мы двигаемся от осознания к практике, от новых привычек <br>к устойчивым результатам. Пошагово. Глубоко. <br>С поддержкой сообщества.</p>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="color: #B9873F; font-size: 18px;">✦</span>
+        <span style="font-size: 16px; color: #23201B;">1 неделя = 1 грань = новые знания и практики</span>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- 06 FORMAT -->
+  <section style="padding: 70px 64px; background: #EFE6D4;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-bottom: 36px;">
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px;">
+                <div style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 16px; margin-bottom: 6px;">01</div>
+        <h4 style="font-size: 17px; font-weight: 600; margin: 0 0 8px;">Проактивность</h4>
+        <p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Берём ответственность за свою жизнь. Учимся выбирать реакцию, а не оправдания.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px;">
+                <div style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 16px; margin-bottom: 6px;">02</div>
+        <h4 style="font-size: 17px; font-weight: 600; margin: 0 0 8px;">Начните с конца</h4>
+        <p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Определяем свои ценности и цели. Создаём личную миссию и видение.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px;">
+                <div style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 16px; margin-bottom: 6px;">03</div>
+        <h4 style="font-size: 17px; font-weight: 600; margin: 0 0 8px;">Сначала важное</h4>
+        <p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Учимся управлять временем и энергией. Фокус на главном — без чувства вины.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px;">
+                <div style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 16px; margin-bottom: 6px;">04</div>
+        <h4 style="font-size: 17px; font-weight: 600; margin: 0 0 8px;">Выиграл / Выиграл</h4>
+        <p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Строим отношения на взаимном уважении и доверии. Ищем решения, где все в плюсе.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px;">
+                <div style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 16px; margin-bottom: 6px;">05</div>
+        <h4 style="font-size: 17px; font-weight: 600; margin: 0 0 8px;">Сначала понять — потом быть понятым</h4>
+        <p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Развиваем эмпатию и навыки глубокого слушания.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px;">
+                <div style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 16px; margin-bottom: 6px;">06</div>
+        <h4 style="font-size: 17px; font-weight: 600; margin: 0 0 8px;">Синергия</h4>
+        <p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Объединяем сильные стороны. Создаём вместе то, что невозможно в одиночку.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px;">
+                <div style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 16px; margin-bottom: 6px;">07</div>
+        <h4 style="font-size: 17px; font-weight: 600; margin: 0 0 8px;">Затачивайте пилу</h4>
+        <p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Заботимся о теле, разуме, эмоциях и духе. Формируем привычку к постоянному росту.</p>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px;">
+                <div style="font-family: 'PT Serif', serif; color: #B9873F; font-size: 16px; margin-bottom: 6px;">08</div>
+        <h4 style="font-size: 17px; font-weight: 600; margin: 0 0 8px;">Интеграция</h4>
+        <p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Соединяем все грани в единую систему. Создаём свою модель осознанной жизни.</p>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; background: #FBF6EC; border-radius: 6px; padding: 26px 36px; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F; font-size: 20px;">✦</span>
+        <span style="font-family: 'PT Serif', serif; font-style: italic; font-size: 21px; color: #23201B;">Это не просто обучение. Это путь, который останется с вами навсегда.</span>
+      </div>
+      <a href="#format" style="display: flex; align-items: center; gap: 10px; padding: 16px 28px; color: #FBF6EC; border-radius: 3px; font-size: 15px; font-weight: 600; white-space: nowrap; background-color: #B9873F">Смотреть программу подробно →</a>
+    </div>
+  </section><section id="format" style="position: relative; padding: 90px 64px; min-height: 460px; background-image: url('uploads/ChatGPT Image 9 июл. 2026 г., 07_47_29-a3988c4a.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <div style="max-width: 560px;">
+      <div style="font-size: 15px; font-weight: 700; color: #B9873F; letter-spacing: 0.08em; margin-bottom: 10px;">06</div>
+      <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 18px;"></div>
+      <h2 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 42px; line-height: 1.2; margin: 0;">Формат, который</h2>
+      <h2 style="font-family: 'PT Serif', serif; font-style: italic; font-weight: 400; font-size: 42px; line-height: 1.2; margin: 0 0 22px; color: #B9873F;">работает на результат</h2>
+      <p style="font-size: 17px; line-height: 1.6; color: #4A443C; margin: 0 0 30px;">Мы создали среду, в которой знания превращаются в осознанные действия и устойчивые изменения. Всё продумано так, чтобы вы могли двигаться в своём темпе, но не в одиночку.</p>
+      <a href="#price" class="cta-primary" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #B9873F; border-radius: 6px; padding: 24px 28px; text-decoration: none;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <span style="color: #FFFFFF; font-size: 18px;">✦</span>
+          <div>
+            <div style="font-size: 16px; color: #FFFFFF;">Онлайн-формат с живым вовлечением</div>
+            <div style="font-size: 14px; color: #FBF6EC;">Глубина личной работы + поддержка сообщества</div>
+          </div>
+        </div>
+        <span style="color: #FFFFFF; font-size: 20px; flex-shrink: 0;">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 06 FEATURES -->
+  <section style="padding: 0 64px 40px;">
+    <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 22px; background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 40px 30px;">
+      <div style="text-align: center;">
+        <span style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><img src="uploads/ChatGPT Image 9 июл. 2026 г., 07_54_31 (2).png" alt="" style="width: 135%; height: 135%; object-fit: cover; display: block;"></span>
+        <h4 style="font-size: 15px; font-weight: 600; margin: 0 0 8px;">8 недель глубокой работы</h4>
+        <p style="font-size: 13px; color: #6B6155; line-height: 1.5; margin: 0;">Пошаговая система. Каждая неделя — новая грань и новые инструменты.</p>
+      </div>
+      <div style="text-align: center;">
+        <span style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><img src="uploads/ChatGPT Image 9 июл. 2026 г., 07_54_31 (3).png" alt="" style="width: 175%; height: 175%; object-fit: cover; display: block;"></span>
+        <h4 style="font-size: 15px; font-weight: 600; margin: 0 0 8px;">Видео-уроки и материалы</h4>
+        <p style="font-size: 13px; color: #6B6155; line-height: 1.5; margin: 0;">Короткие, ёмкие уроки по 15–20 минут. Только суть и практика.</p>
+      </div>
+      <div style="text-align: center;">
+        <span style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><img src="uploads/ChatGPT Image 9 июл. 2026 г., 07_54_32 (4).png" alt="" style="width: 175%; height: 175%; object-fit: cover; display: block;"></span>
+        <h4 style="font-size: 15px; font-weight: 600; margin: 0 0 8px;">Живые встречи и разборы</h4>
+        <p style="font-size: 13px; color: #6B6155; line-height: 1.5; margin: 0;">Еженедельные онлайн-встречи с разбором практики и вопросов.</p>
+      </div>
+      <div style="text-align: center;">
+        <span style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><img src="uploads/ChatGPT Image 9 июл. 2026 г., 07_54_32 (5).png" alt="" style="width: 135%; height: 135%; object-fit: cover; display: block;"></span>
+        <h4 style="font-size: 15px; font-weight: 600; margin: 0 0 8px;">Практические задания</h4>
+        <p style="font-size: 13px; color: #6B6155; line-height: 1.5; margin: 0;">Применяйте сразу. Без практики знания не закрепляются.</p>
+      </div>
+      <div style="text-align: center;">
+        <span style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><img src="uploads/ChatGPT Image 9 июл. 2026 г., 07_54_32 (6).png" alt="" style="width: 175%; height: 175%; object-fit: cover; display: block;"></span>
+        <h4 style="font-size: 15px; font-weight: 600; margin: 0 0 8px;">Поддержка сообщества</h4>
+        <p style="font-size: 13px; color: #6B6155; line-height: 1.5; margin: 0;">Вы не одни на этом пути. Общение, поддержка, обмен опытом.</p>
+      </div>
+      <div style="text-align: center;">
+        <span style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;"><img src="uploads/ChatGPT Image 9 июл. 2026 г., 07_54_33 (7).png" alt="" style="width: 135%; height: 135%; object-fit: cover; display: block;"></span>
+        <h4 style="font-size: 15px; font-weight: 600; margin: 0 0 8px;">Доступ к материалам навсегда</h4>
+        <p style="font-size: 13px; color: #6B6155; line-height: 1.5; margin: 0;">Все уроки, конспекты и записи остаются с вами навсегда.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 QUOTE STRIP -->
+  <div style="margin: 0 64px 90px; background: #EFE6D4; border-radius: 6px; padding: 34px 44px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+    <p style="font-family: 'PT Serif', serif; font-style: italic; font-size: 19px; line-height: 1.5; margin: 0; color: #3A352E;">Самый важный шаг — это не первый.<br>Самый важный шаг — это следующий.</p>
+    <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #B9873F; white-space: nowrap;">— СТИВЕН КОВИ</div>
+  </div>
+
+  <!-- 07 TESTIMONIALS -->
+  <section style="position: relative; padding: 90px 64px 40px; background-image: linear-gradient(to right, #F7F0E4 32%, rgba(247, 240, 228, 0.35) 55%, rgba(247, 240, 228, 0) 68%), url('uploads/ChatGPT Image 9 июл. 2026 г., 08_07_16.png'); background-size: cover, 92%; background-position: center, center -163px; background-repeat: no-repeat, no-repeat;">
+    <div style="font-size: 15px; font-weight: 700; color: #B9873F; letter-spacing: 0.08em; margin-bottom: 10px;">07</div>
+    <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 18px;"></div>
+    <div style="max-width: 460px; margin-bottom: 40px;">
+      <h2 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 42px; line-height: 1.2; margin: 0;">Отзывы тех,</h2>
+      <h2 style="font-family: 'PT Serif', serif; font-style: italic; font-weight: 400; font-size: 42px; line-height: 1.2; margin: 0 0 20px; color: #B9873F;">кто уже прошёл этот путь</h2>
+      <p style="font-size: 17px; line-height: 1.6; color: #4A443C; margin: 0;">Каждая история — это подтверждение того, что изменения возможны. Честные слова тех, кто решился начать с себя.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px;">
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px; display: flex; flex-direction: column; height: 100%;">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+          <img src="uploads/ChatGPT Image 9 июл. 2026 г., 07_47_29-7c1f2e3d.png" alt="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
+          <div><div style="font-size: 16px; font-weight: 600;">Анна, 32 года</div><div style="font-size: 13px; color: #6B6155;">Маркетолог</div></div>
+        </div>
+        <div style="color: #C99B5E; font-size: 14px; margin-bottom: 12px;">★★★★★</div>
+        <p style="font-size: 14px; line-height: 1.55; color: #4A443C; margin: 0 0 16px;">Курс стал для меня точкой опоры. Я впервые за долгое время почувствовала себя собой. Появилась ясность, уверенность и внутренний покой.</p>
+        <div style="background: #F0E6D4; border-radius: 5px; padding: 14px 16px; margin-top: auto;">
+          <div style="font-size: 13px; font-weight: 600; color: #B9873F; margin-bottom: 4px;">✦ Что изменилось:</div>
+          <div style="font-size: 13px; color: #4A443C;">Я ушла с нелюбимой работы и запустила своё дело.</div>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px; display: flex; flex-direction: column; height: 100%;">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+          <img src="uploads/ChatGPT Image 9 июл. 2026 г., 09_05_49 (2).png" alt="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
+          <div><div style="font-size: 16px; font-weight: 600;">Игорь, 38 лет</div><div style="font-size: 13px; color: #6B6155;">Предприниматель</div></div>
+        </div>
+        <div style="color: #C99B5E; font-size: 14px; margin-bottom: 12px;">★★★★★</div>
+        <p style="font-size: 14px; line-height: 1.55; color: #4A443C; margin: 0 0 16px;">Наконец-то понял, как устроены мои реакции и почему я застреваю в одних и тех же сценариях. Это дало свободу выбора и энергию двигаться дальше.</p>
+        <div style="background: #F0E6D4; border-radius: 5px; padding: 14px 16px; margin-top: auto;">
+          <div style="font-size: 13px; font-weight: 600; color: #B9873F; margin-bottom: 4px;">✦ Что изменилось:</div>
+          <div style="font-size: 13px; color: #4A443C;">Вышел на новый уровень дохода и делаю то, что вдохновляет.</div>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px; display: flex; flex-direction: column; height: 100%;">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+          <img src="uploads/ChatGPT Image 9 июл. 2026 г., 09_05_48 (1).png" alt="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
+          <div><div style="font-size: 16px; font-weight: 600;">Мария, 29 лет</div><div style="font-size: 13px; color: #6B6155;">Дизайнер</div></div>
+        </div>
+        <div style="color: #C99B5E; font-size: 14px; margin-bottom: 12px;">★★★★★</div>
+        <p style="font-size: 14px; line-height: 1.55; color: #4A443C; margin: 0 0 16px;">Очень бережный и глубокий курс. Много практики, поддержки и живых встреч. Я стала спокойнее, перестала сравнивать себя и услышала свои желания.</p>
+        <div style="background: #F0E6D4; border-radius: 5px; padding: 14px 16px; margin-top: auto;">
+          <div style="font-size: 13px; font-weight: 600; color: #B9873F; margin-bottom: 4px;">✦ Что изменилось:</div>
+          <div style="font-size: 13px; color: #4A443C;">Наладила отношения с собой и близкими.</div>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px; display: flex; flex-direction: column; height: 100%;">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+          <img src="uploads/ChatGPT Image 9 июл. 2026 г., 09_05_51 (4).png" alt="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
+          <div><div style="font-size: 16px; font-weight: 600;">Дмитрий, 41 год</div><div style="font-size: 13px; color: #6B6155;">Руководитель</div></div>
+        </div>
+        <div style="color: #C99B5E; font-size: 14px; margin-bottom: 12px;">★★★★★</div>
+        <p style="font-size: 14px; line-height: 1.55; color: #4A443C; margin: 0 0 16px;">Система «7 граней» — это гениально просто и при этом глубоко. Курс помог навести порядок в голове и в жизни. Рекомендую каждому, кто хочет изменений.</p>
+        <div style="background: #F0E6D4; border-radius: 5px; padding: 14px 16px; margin-top: auto;">
+          <div style="font-size: 13px; font-weight: 600; color: #B9873F; margin-bottom: 4px;">✦ Что изменилось:</div>
+          <div style="font-size: 13px; color: #4A443C;">Стало больше фокуса, меньше хаоса. Принял важные решения.</div>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px; display: flex; flex-direction: column; height: 100%;">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+          <img src="uploads/ChatGPT Image 9 июл. 2026 г., 09_05_52 (5).png" alt="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
+          <div><div style="font-size: 16px; font-weight: 600;">Екатерина, 35 лет</div><div style="font-size: 13px; color: #6B6155;">Психолог</div></div>
+        </div>
+        <div style="color: #C99B5E; font-size: 14px; margin-bottom: 12px;">★★★★★</div>
+        <p style="font-size: 14px; line-height: 1.55; color: #4A443C; margin: 0 0 16px;">Я много училась и проходила курсы, но здесь всё сложилось воедино. Появилось ощущение целостности и внутренней силы. Это бесценно.</p>
+        <div style="background: #F0E6D4; border-radius: 5px; padding: 14px 16px; margin-top: auto;">
+          <div style="font-size: 13px; font-weight: 600; color: #B9873F; margin-bottom: 4px;">✦ Что изменилось:</div>
+          <div style="font-size: 13px; color: #4A443C;">Чувствую себя на своём месте и делаю то, что люблю.</div>
+        </div>
+      </div>
+      <div style="background: #FBF6EC; border: 1px solid #E4D6BB; border-radius: 6px; padding: 28px; display: flex; flex-direction: column; height: 100%;">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+          <img src="uploads/ChatGPT Image 9 июл. 2026 г., 09_05_53 (6).png" alt="" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
+          <div><div style="font-size: 16px; font-weight: 600;">Ольга, 27 лет</div><div style="font-size: 13px; color: #6B6155;">SMM-специалист</div></div>
+        </div>
+        <div style="color: #C99B5E; font-size: 14px; margin-bottom: 12px;">★★★★★</div>
+        <p style="font-size: 14px; line-height: 1.55; color: #4A443C; margin: 0 0 16px;">Благодаря курсу я перестала жить «на автомате» и начала слышать себя. Появились цели, энергия и вера в себя. Спасибо!</p>
+        <div style="background: #F0E6D4; border-radius: 5px; padding: 14px 16px; margin-top: auto;">
+          <div style="font-size: 13px; font-weight: 600; color: #B9873F; margin-bottom: 4px;">✦ Что изменилось:</div>
+          <div style="font-size: 13px; color: #4A443C;">Начала инвестировать в себя и своё будущее.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 30px; background: #EFE6D4; border-radius: 6px; padding: 32px 40px; margin-bottom: 30px; flex-wrap: wrap;">
+      <p style="font-family: 'PT Serif', serif; font-style: italic; font-size: 18px; line-height: 1.5; margin: 0; color: #3A352E; max-width: 460px;">Изменения начинаются с маленького шага. Остальное — путь, который мы проходим вместе.</p>
+      <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+        <span style="font-size: 16px; color: #23201B;">Присоединяйтесь<br>к тем, кто уже в пути</span>
+        <a href="#price" class="cta-primary" style="display: flex; align-items: center; gap: 10px; padding: 16px 26px; background: #B9873F; color: #FBF6EC; border-radius: 3px; font-size: 15px; white-space: nowrap;">Хочу такие же изменения <span>→</span></a>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"></path><circle cx="17" cy="9" r="2.4"></circle><path d="M15.5 14.6c2.4.2 4.5 2 4.5 5.4"></path></svg></span>
+        <div><div style="font-family: 'PT Serif', serif; font-size: 24px;">1000+</div><div style="font-size: 13px; color: #6B6155;">участников прошли курс</div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2l3 6 6 1-4.5 4.5L17 20l-5-3-5 3 .5-6.5L3 9l6-1z"></path></svg></span>
+        <div><div style="font-family: 'PT Serif', serif; font-size: 24px;">4,9 из 5</div><div style="font-size: 13px; color: #6B6155;">средняя оценка курса</div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 5h13a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H10l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg></span>
+        <div><div style="font-family: 'PT Serif', serif; font-size: 24px;">90%</div><div style="font-size: 13px; color: #6B6155;">рекомендуют курс своим друзьям</div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 20s-7-4.3-9.5-9C1 8 3 4.5 6.5 4.5c2 0 3.4 1 5.5 3.3 2.1-2.3 3.5-3.3 5.5-3.3C21 4.5 23 8 21.5 11 19 15.7 12 20 12 20z"></path></svg></span>
+        <div><div style="font-family: 'PT Serif', serif; font-size: 24px;">Поддержка</div><div style="font-size: 13px; color: #6B6155;">сообщество рядом на всём пути</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 FAQ -->
+  <!-- 08 ABOUT INSTRUCTOR -->
+  <section style="padding: 90px 64px 0;">
+    <div style="display: flex; gap: 50px; flex-wrap: wrap; align-items: stretch;">
+      <div style="flex: 1 1 440px; max-width: 480px;">
+        <div style="font-size: 15px; font-weight: 700; color: #B9873F; letter-spacing: 0.08em; margin-bottom: 10px;">О ВЕДУЩЕМ КУРСА</div>
+        <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 22px;"></div>
+        <h2 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 52px; line-height: 1.15; margin: 0 0 24px;">Антон<br>Кобзев</h2>
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px; font-size: 15px; line-height: 1.5; color: #4A443C;">
+          <div><strong style="color: #23201B;">Медиатор</strong><br>специалист по разрешению конфликтов.</div>
+          <div><strong style="color: #23201B;">Автор семинаров</strong><br>о раскрытии предназначения, планировании жизни и гармоничных отношениях.</div>
+          <div><strong style="color: #23201B;">Эксперт</strong> по мотивации.</div>
+        </div>
+        <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+          <div style="text-align: center;">
+            <span style="color: #B9873F; display: block; margin-bottom: 10px;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-3 3 2 3-4 3 4 3-2 4 3"></path><path d="M2 12v3a2 2 0 0 0 2 2h1M22 12v3a2 2 0 0 1-2 2h-1"></path><path d="M8 11v6M16 11v6"></path></svg></span>
+            <div style="font-size: 13px; color: #4A443C;">Медиатор</div>
+          </div>
+          <div style="text-align: center;">
+            <span style="color: #B9873F; display: block; margin-bottom: 10px;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><path d="M12 3v3M12 18v3"></path></svg></span>
+            <div style="font-size: 13px; color: #4A443C;">Эксперт<br>по мотивации</div>
+          </div>
+          <div style="text-align: center;">
+            <span style="color: #B9873F; display: block; margin-bottom: 10px;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6c-2-1.5-5-2-8-1v13c3-1 6-.5 8 1 2-1.5 5-2 8-1V5c-3-1-6-.5-8 1z"></path><path d="M12 6v13"></path></svg></span>
+            <div style="font-size: 13px; color: #4A443C;">Автор<br>семинаров</div>
+          </div>
+          <div style="text-align: center;">
+            <span style="color: #B9873F; display: block; margin-bottom: 10px;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21V10"></path><path d="M12 10c0-4 3-6 6-6 0 4-2 6-6 6z"></path><path d="M12 14c0-3-2-4.5-5-4.5 0 3 2 4.5 5 4.5z"></path></svg></span>
+            <div style="font-size: 13px; color: #4A443C;">Практик личностного<br>развития</div>
+          </div>
+        </div>
+      </div>
+      <div style="flex: 1 1 320px; max-width: 420px; border-radius: 8px; overflow: hidden; min-height: 520px; background-image: url('uploads/ChatGPT Image 9 июл. 2026 г., 15_00_33.png'); background-size: cover; background-position: center;"></div>
+    </div>
+  </section>
+
+  <section style="padding: 40px 64px 40px;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr) auto; align-items: center; gap: 30px; background: #F7F0E4; border: 1px solid #E4D6BB; border-radius: 8px; padding: 34px 44px;">
+      <div>
+        <div style="font-family: 'PT Serif', serif; font-size: 30px; color: #B9873F; margin-bottom: 6px;">15+</div>
+        <div style="font-size: 14px; color: #4A443C;">лет практики и исследований</div>
+      </div>
+      <div style="border-left: 1px solid #E4D6BB; padding-left: 30px;">
+        <div style="font-family: 'PT Serif', serif; font-size: 30px; color: #B9873F; margin-bottom: 6px;">1000+</div>
+        <div style="font-size: 14px; color: #4A443C;">участников моих программ</div>
+      </div>
+      <div style="border-left: 1px solid #E4D6BB; padding-left: 30px;">
+        <div style="font-family: 'PT Serif', serif; font-style: italic; font-size: 26px; color: #B9873F; margin-bottom: 6px;">Автор</div>
+        <div style="font-size: 14px; color: #4A443C;">уникальных семинаров и тренингов</div>
+      </div>
+      <div style="border-left: 1px solid #E4D6BB; padding-left: 30px;">
+        <div style="font-family: 'PT Serif', serif; font-style: italic; font-size: 26px; color: #B9873F; margin-bottom: 6px;">Миссия</div>
+        <div style="font-size: 14px; color: #4A443C;">помогать людям находить себя и жить осознанно</div>
+      </div>
+      <div style="font-family: 'PT Serif', serif; font-size: 60px; color: #E4D6BB; line-height: 1;">”</div>
+    </div>
+  </section>
+
+  <!-- 09 PRICING -->
+  <section id="price" style="position: relative; padding: 90px 64px; min-height: 460px; background-image: linear-gradient(to right, #F7F0E4 32%, rgba(247, 240, 228, 0.35) 55%, rgba(247, 240, 228, 0) 68%), url('uploads/9т экран без текстов.png'); background-size: cover, cover; background-position: center, center top; background-repeat: no-repeat, no-repeat;">
+    <div style="max-width: 460px;">
+      <div style="font-size: 15px; font-weight: 700; color: #B9873F; letter-spacing: 0.08em; margin-bottom: 10px;">09</div>
+      <div style="width: 40px; height: 2px; background: #B9873F; margin-bottom: 18px;"></div>
+      <h2 style="font-family: 'PT Serif', serif; font-weight: 400; font-size: 42px; line-height: 1.2; margin: 0;">Инвестиция в себя —</h2>
+      <h2 style="font-family: 'PT Serif', serif; font-style: italic; font-weight: 400; font-size: 42px; line-height: 1.2; margin: 0 0 20px; color: #B9873F;">шаг к новой жизни</h2>
+      <p style="font-size: 17px; line-height: 1.6; color: #4A443C; margin: 0 0 26px;">Этот курс — не просто обучение. Это поддержка, вдохновение и система, которая останется с вами навсегда.</p>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px; font-size: 15px;"><img src="uploads/screen9_icons_redrawn/png_1024/01_star_transformation.png" alt="" style="width: 42px; height: 42px; object-fit: contain;">Глубокая трансформация изнутри</div>
+        <div style="display: flex; align-items: center; gap: 12px; font-size: 15px;"><img src="uploads/screen9_icons_redrawn/png_1024/02_leaf_tools.png" alt="" style="width: 42px; height: 42px; object-fit: contain;">Практические инструменты на каждый день</div>
+        <div style="display: flex; align-items: center; gap: 12px; font-size: 15px;"><img src="uploads/screen9_icons_redrawn/png_1024/03_community.png" alt="" style="width: 42px; height: 42px; object-fit: contain;">Сообщество единомышленников</div>
+        <div style="display: flex; align-items: center; gap: 12px; font-size: 15px;"><img src="uploads/screen9_icons_redrawn/png_1024/04_compass_support.png" alt="" style="width: 42px; height: 42px; object-fit: contain;">Поддержка на пути изменений</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 40px 64px 40px;">
+    <div style="display: flex; justify-content: center; margin-bottom: 40px;">
+      <div style="background: #FBF6EC; border: 2px solid #B9873F; border-radius: 8px; padding: 48px; max-width: 640px; width: 100%; position: relative;">
+        <div style="position: absolute; top: -18px; left: 48px; background: #B9873F; color: #FBF6EC; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; padding: 6px 16px; border-radius: 3px;">★ УЧАСТИЕ В КУРСЕ</div>
+        <div style="font-family: 'PT Serif', serif; font-size: 26px; margin-bottom: 6px;">«7 граней совершенства»</div>
+        <div style="font-size: 15px; color: #6B6155; margin-bottom: 30px;">Полный курс — 8 недель трансформации</div>
+
+        <div style="display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 30px;">
+          <div style="flex: 1 1 220px; background: #EFE6D4; border-radius: 6px; padding: 22px 26px;">
+            <div style="font-family: 'PT Serif', serif; font-size: 36px; color: #23201B; margin-bottom: 4px;">25 000 ₽</div>
+            <div style="font-size: 14px; color: #6B6155;">за весь курс целиком</div>
+          </div>
+          <div style="flex: 1 1 220px; background: #EFE6D4; border-radius: 6px; padding: 22px 26px;">
+            <div style="font-family: 'PT Serif', serif; font-size: 36px; color: #23201B; margin-bottom: 4px;">14 000 ₽<span style="font-size: 16px; color: #6B6155;"> / мес</span></div>
+            <div style="font-size: 14px; color: #6B6155;">два платежа в рассрочку</div>
+          </div>
+        </div>
+
+        <div style="height: 1px; background: #E4D6BB; margin-bottom: 28px;"></div>
+
+        <div style="font-size: 15px; font-weight: 600; color: #23201B; margin-bottom: 18px;">Что входит:</div>
+        <ul style="list-style: none; padding: 0; margin: 0 0 34px; display: flex; flex-direction: column; gap: 16px; font-size: 15px; color: #4A443C;">
+          <li style="display: flex; gap: 12px; align-items: flex-start;"><img src="uploads/screen9_icons_redrawn/png_1024/11_check.png" alt="" style="width: 20px; height: 20px; object-fit: contain; margin-top: 1px;">8 живых вебинаров</li>
+          <li style="display: flex; gap: 12px; align-items: flex-start;"><img src="uploads/screen9_icons_redrawn/png_1024/11_check.png" alt="" style="width: 20px; height: 20px; object-fit: contain; margin-top: 1px;">Диагностические задания и ежедневные практики</li>
+          <li style="display: flex; gap: 12px; align-items: flex-start;"><img src="uploads/screen9_icons_redrawn/png_1024/11_check.png" alt="" style="width: 20px; height: 20px; object-fit: contain; margin-top: 1px;">Сопровождение куратора в чате</li>
+          <li style="display: flex; gap: 12px; align-items: flex-start;"><img src="uploads/screen9_icons_redrawn/png_1024/11_check.png" alt="" style="width: 20px; height: 20px; object-fit: contain; margin-top: 1px;">Групповые Zoom-встречи</li>
+          <li style="display: flex; gap: 12px; align-items: flex-start;"><img src="uploads/screen9_icons_redrawn/png_1024/11_check.png" alt="" style="width: 20px; height: 20px; object-fit: contain; margin-top: 1px;">Личный план развития на 3 месяца</li>
+        </ul>
+
+        <div id="b24-signup-form">
+          <script data-b24-form="inline/89/i3lmoz" data-skip-moving="true">
+            (function(w,d,u){
+              var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+              var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+            })(window,document,'https://crm.realnow.ru/upload/crm/form/loader_89_i3lmoz.js');
+          </script>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 60px; flex-wrap: wrap; margin-bottom: 40px;">
+      <div style="display: flex; gap: 18px; align-items: flex-start;">
+        <span style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><img src="uploads/screen9_icons_redrawn/png_1024/05_card_payment.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></span>
+        <div><div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Удобная оплата</div><p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Выберите способ оплаты, который вам удобен: Банковская карта • СБП • Рассрочка • PayPal</p></div>
+      </div>
+      <div style="width: 1px; background: #D8C7A4; align-self: stretch;"></div>
+      <div style="display: flex; gap: 18px; align-items: flex-start;">
+        <span style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><img src="uploads/screen9_icons_redrawn/png_1024/06_calendar_guarantee.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></span>
+        <div><div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Гарантия возврата</div><p style="font-size: 14px; color: #6B6155; line-height: 1.5; margin: 0;">Если в течение 3 дней после начала курса вы поймёте, что это не ваше — мы вернём вам деньги без лишних вопросов.</p></div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 44px; background: #EFE6D4; border-radius: 6px; padding: 20px; margin-bottom: 40px; flex-wrap: wrap;">
+      <div style="width: 260px; height: 160px; border-radius: 4px; overflow: hidden; background-image: url('uploads/ChatGPT Image 9 июл. 2026 г., 12_19_39.png'); background-size: cover; background-position: center; flex-shrink: 0;"></div>
+      <div style="flex: 1; min-width: 260px;">
+        <div style="font-size: 22px; margin-bottom: 10px;">Готовы начать свой путь изменений?</div>
+        <p style="font-size: 15px; color: #4A443C; line-height: 1.5; margin: 0;">Присоединяйтесь к Клубу 108. Ваше будущее начинается сегодня.</p>
+      </div>
+      <a href="#" class="cta cta-primary" style="display: flex; align-items: center; gap: 10px; padding: 18px 30px; background: #B9873F; color: #FBF6EC; border-radius: 3px; font-size: 15px; font-weight: 600; white-space: nowrap; margin-right: 20px;">Да, я готов(а) к изменениям <span>→</span></a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 60px;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F;"><img src="uploads/screen9_icons_redrawn/png_1024/07_shield_secure.png" alt="" style="width: 40px; height: 40px; object-fit: contain;"></span>
+        <div><div style="font-size: 15px; font-weight: 600;">Безопасная оплата</div><div style="font-size: 13px; color: #6B6155;">Ваши данные под надёжной защитой</div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F;"><img src="uploads/screen9_icons_redrawn/png_1024/08_headset_questions.png" alt="" style="width: 40px; height: 40px; object-fit: contain;"></span>
+        <div><div style="font-size: 15px; font-weight: 600;">Есть вопросы?</div><div style="font-size: 13px; color: #6B6155;">Мы на связи и готовы помочь вам</div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F;"><img src="uploads/screen9_icons_redrawn/png_1024/09_gift_bonus.png" alt="" style="width: 40px; height: 40px; object-fit: contain;"></span>
+        <div><div style="font-size: 15px; font-weight: 600;">Бонусы участникам</div><div style="font-size: 13px; color: #6B6155;">Полезные материалы и приятные подарки</div></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="color: #B9873F;"><img src="uploads/screen9_icons_redrawn/png_1024/10_heart_support.png" alt="" style="width: 40px; height: 40px; object-fit: contain;"></span>
+        <div><div style="font-size: 15px; font-weight: 600;">Мы рядом</div><div style="font-size: 13px; color: #6B6155;">Поддержка на каждом этапе вашего пути</div></div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap; padding: 30px 0 10px; border-top: 1px solid #E4D6BB;">
+      <div style="font-family: 'PT Serif', serif; font-size: 20px; color: #23201B;">+7 926 40 108 80</div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <a href="https://t.me/club108" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #B9873F; color: #FFFFFF;" title="Telegram"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 4L3 11l6 2m12-9l-4 17-6-6m10-11L9 13m0 0v6l3-3.5"></path></svg></a>
+        <a href="https://wa.me/+79264010880" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #B9873F; color: #FFFFFF;" title="WhatsApp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20l1.4-4.1A8 8 0 1 1 9 18.6z"></path><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5.5 0 1-.6.7-1.1l-.8-1.3c-.2-.3-.6-.4-.9-.2l-.7.4a4 4 0 0 1-2.1-2.1l.4-.7c.2-.3.1-.7-.2-.9L9.6 8.3C9.1 8 8.5 8.4 8.5 9z"></path></svg></a>
+        <a href="https://max.ru/u/f9LHodD0cOKQEWQiqdc_0Ok26nM3vLA9XOXsK_Np0tjWKBesbCHqhZBYHMU" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #B9873F;" title="MAX"><img src="uploads/max_icon_gold_transparent.png" alt="MAX" style="width: 24px; height: 24px; object-fit: contain; filter: brightness(0) invert(1);"></a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</x-dc>
+</body>
+</html>
