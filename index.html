@@ -708,14 +708,7 @@
           <li style="display: flex; gap: 12px; align-items: flex-start;"><img src="uploads/screen9_icons_redrawn/png_1024/11_check.png" alt="" style="width: 20px; height: 20px; object-fit: contain; margin-top: 1px;">Личный план развития на 3 месяца</li>
         </ul>
 
-        <div id="b24-signup-form">
-          <script data-b24-form="inline/89/i3lmoz" data-skip-moving="true">
-            (function(w,d,u){
-              var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-              var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-            })(window,document,'https://crm.realnow.ru/upload/crm/form/loader_89_i3lmoz.js');
-          </script>
-        </div>
+        <div id="b24-signup-form"></div>
       </div>
     </div>
 
@@ -772,13 +765,31 @@
 </div>
 
 </x-dc>
+<div id="b24-form-mount"></div>
+<script data-b24-form="inline/89/i3lmoz" data-skip-moving="true">
+  (function(w,d,u){
+    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+  })(window,document,'https://crm.realnow.ru/upload/crm/form/loader_89_i3lmoz.js');
+</script>
 <script>
-  window.addEventListener('load', function () {
-    (function (w, d, u) {
-      var s = d.createElement('script'); s.async = true; s.src = u + '?' + (Date.now() / 180000 | 0);
-      var h = d.getElementsByTagName('script')[0]; h.parentNode.insertBefore(s, h);
-    })(window, document, 'https://crm.realnow.ru/upload/crm/form/loader_89_i3lmoz.js');
-  });
+  // Переносим отрисованную форму Bitrix24 в нужное место в блоке тарифов,
+  // как только она появится на странице.
+  (function () {
+    var target = document.getElementById('b24-signup-form');
+    var mount = document.getElementById('b24-form-mount');
+    if (!target || !mount) return;
+    var attempts = 0;
+    var timer = setInterval(function () {
+      attempts++;
+      if (mount.firstChild) {
+        while (mount.firstChild) target.appendChild(mount.firstChild);
+        clearInterval(timer);
+      } else if (attempts > 100) {
+        clearInterval(timer); // ~30 секунд — прекращаем попытки
+      }
+    }, 300);
+  })();
 </script>
 </body>
 </html>
